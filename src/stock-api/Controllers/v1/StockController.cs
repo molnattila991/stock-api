@@ -24,7 +24,7 @@ namespace stock_api.Controllers.v1
         {
             var command = new StockCommand()
             {
-                items = request.Inserted.Select(item => new StockItem()
+                Items = request.Inserted.Select(item => new StockItem()
                 {
                     Amount = item.Value,
                     Type = item.Key,

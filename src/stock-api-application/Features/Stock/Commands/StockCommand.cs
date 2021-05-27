@@ -11,7 +11,7 @@ namespace stock_api_application.Features.Stock.Commands
 {
     public class StockCommand : IRequest<bool>
     {
-        public IEnumerable<StockItem> items { get; set; }
+        public IEnumerable<StockItem> Items { get; set; }
     }
 
     public class StockCommandHandler : IRequestHandler<StockCommand, bool>
@@ -27,7 +27,7 @@ namespace stock_api_application.Features.Stock.Commands
         {
             try
             {
-                await _stockRepository.AddItems(request.items);
+                await _stockRepository.AddItems(request.Items);
             }
             catch (Exception e)
             {
