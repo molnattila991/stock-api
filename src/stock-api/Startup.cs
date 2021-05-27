@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using stock_api.Extensions;
+using stock_api_application;
+using stock_api_infrastructure_in_memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,12 +28,11 @@ namespace stock_api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddApplicationLayer();
+            services.AddInfrastructureInMemory();
+            services.AddSwaggerExtension();
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "stock_api", Version = "v1" });
-            });
+            services.AddApiVersioningExtension();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,13 +41,13 @@ namespace stock_api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "stock_api v1"));
             }
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSwaggerExtension();
 
             app.UseEndpoints(endpoints =>
             {
