@@ -4,7 +4,7 @@ using System.Text;
 
 namespace stock_api_domain.Entities
 {
-    class StockItem
+    public class StockItem
     {
         public string Type { get; set; }
         public int ValueOfType { get; set; }
