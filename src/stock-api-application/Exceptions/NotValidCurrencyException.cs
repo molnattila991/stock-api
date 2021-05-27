@@ -11,7 +11,7 @@ namespace stock_api_application.Exceptions
 
         }
 
-        public NotValidCurrencyException() : base()
+        public NotValidCurrencyException() : base("One of the given Bill/Coin is not in valid format.")
         {
 
         }

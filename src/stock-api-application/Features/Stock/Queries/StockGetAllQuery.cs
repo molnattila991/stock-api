@@ -25,9 +25,7 @@ namespace stock_api_application.Features.Stock.Queries
 
         public async Task<IEnumerable<StockItem>> Handle(StockGetAllQuery request, CancellationToken cancellationToken)
         {
-            var result = await _stockRepository.GetItems();
-
-            return result;
+            return await _stockRepository.GetItems();
         }
     }
 }

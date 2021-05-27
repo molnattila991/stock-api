@@ -2,6 +2,7 @@
 using Serilog;
 using stock_api_application.Exceptions;
 using stock_api_application.Interfaces;
+using stock_api_application.Services;
 using stock_api_domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,20 +22,27 @@ namespace stock_api_application.Features.CheckOut.Commands
     public class CheckOutStockCommandHandler : IRequestHandler<CheckOutStockCommand, IEnumerable<StockItem>>
     {
         private readonly IStockRepository _stockRepository;
+        private readonly IValidateIncomingItems _validateIncomingItems;
 
-        public CheckOutStockCommandHandler(IStockRepository stockRepository)
+        public CheckOutStockCommandHandler(IStockRepository stockRepository, IValidateIncomingItems validateIncomingItems)
         {
             _stockRepository = stockRepository;
+            _validateIncomingItems = validateIncomingItems;
         }
 
         public async Task<IEnumerable<StockItem>> Handle(CheckOutStockCommand request, CancellationToken cancellationToken)
         {
+            if(_validateIncomingItems.ValidatedItems(request.Items)  == false)
+            {
+                throw new NotValidCurrencyException();
+            }
+
             int sumOfItems = request.Items.Sum(item => item.ValueOfType * item.Amount);
-            int newPrice = RoundPrice(request.Price);
+            int newPrice = HUFHelper.RoundPrice(request.Price);
 
-            int diff = sumOfItems - newPrice;
+            int difference = sumOfItems - newPrice;
 
-            if (diff < 0)
+            if (difference < 0)
             {
                 Log.Error("Have not given enough money.");
                 throw new ChangeException("Have not given enough money.");
@@ -42,87 +50,34 @@ namespace stock_api_application.Features.CheckOut.Commands
             else
             {
                 await _stockRepository.AddItems(request.Items);
-                if (diff == 0)
+                if (difference == 0)
                 {
                     return new List<StockItem>();
                 }
                 else
                 {
-                    List<StockItem> changeList = await HandleChanges(diff);
+                    List<StockItem> changeList = await HandleChanges(difference);
                     return changeList;
                 }
             }
         }
 
-        private async Task<List<StockItem>> HandleChanges(int diff)
+        private async Task<List<StockItem>> HandleChanges(int value)
         {
-            var changeList = new List<StockItem>();
+            var calculator = new ChangeCalculator(_stockRepository);
+            var result = calculator.CalculateChanges(value);
 
-            int copyOfDiff = CalculateChanges(changeList, diff);
-
-            if (copyOfDiff > 0)
+            if (result.Remaining > 0)
             {
                 Log.Error("Not enought change in stock.");
                 throw new ChangeException("Not enought change in stock.");
             }
             else
             {
-                await _stockRepository.RemoveItems(changeList);
+                await _stockRepository.RemoveItems(result.Items);
             }
 
-            return changeList;
+            return result.Items;
         }
-
-        private int CalculateChanges(List<StockItem> changeList, int diff)
-        {
-            var itemsInStock = _stockRepository.GetItems().Result;
-            var orderedList = itemsInStock.Where(item => item.ValueOfType <= diff).OrderByDescending(item => item.ValueOfType);
-
-            int copyOfDiff = diff;
-            int index = 0;
-
-            while (index < orderedList.Count() && copyOfDiff > 0)
-            {
-                var item = orderedList.ElementAt(index);
-                int amount = copyOfDiff / item.ValueOfType;
-                int usableAmount = Clamp(amount, item.Amount);
-
-                if (amount > 0 && usableAmount > 0)
-                {
-                    copyOfDiff -= usableAmount * item.ValueOfType;
-
-                    changeList.Add(new StockItem()
-                    {
-                        Amount = usableAmount,
-                        Type = item.Type,
-                        ValueOfType = item.ValueOfType
-                    });
-                }
-
-                index++;
-            }
-
-            return copyOfDiff;
-        }
-
-        /// <summary>
-        /// Round the given price in case the end is 1,2,3,4,6,7,8,9
-        /// </summary>
-        /// <param name="price"></param>
-        /// <returns></returns>
-        private int RoundPrice(int price)
-        {
-            var round = price % 5;
-            if (round >= 3)
-            {
-                return price + (5 - round);
-            }
-            else
-            {
-                return price - round;
-            }
-        }
-
-        public int Clamp(int value, int max) => value <= max ? value : max;
     }
 }

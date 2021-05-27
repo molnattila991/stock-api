@@ -57,6 +57,11 @@ namespace stock_api_infrastructure_in_memory.Repositories
                 },
                 new ValidItem()
                 {
+                    Type = "2000",
+                    ValueOfType = 2000
+                },
+                new ValidItem()
+                {
                     Type = "5000",
                     ValueOfType = 5000
                 },

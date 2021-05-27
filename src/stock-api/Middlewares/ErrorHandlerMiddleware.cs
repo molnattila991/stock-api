@@ -37,6 +37,7 @@ namespace stock_api.Middlewares
                     case MoneyWithTypeIsNotInStockException:
                     case NotEnoughTypeOfMoneyInStock:
                     case ChangeException:
+                    case NotValidCurrencyException:
                         response.StatusCode = (int)HttpStatusCode.BadRequest;
                         break;
                     default:

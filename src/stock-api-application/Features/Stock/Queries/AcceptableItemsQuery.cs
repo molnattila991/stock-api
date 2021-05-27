@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using stock_api_application.Interfaces;
+using stock_api_application.Services;
 using stock_api_domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -28,11 +29,19 @@ namespace stock_api_application.Features.Stock.Queries
 
         public async Task<IEnumerable<ValidItem>> Handle(AcceptableItemsQuery request, CancellationToken cancellationToken)
         {
-            var itemsInStock = await _stockRepository.GetItems();
             var validItems = await _validItemRepository.GetItems();
+            var calculator = new ChangeCalculator(_stockRepository);
+            var resultList = new List<ValidItem>();
 
-            int sumValueOfItemsInStock = itemsInStock.Sum(item => item.Amount * item.ValueOfType);
-            return validItems.Where(item => item.ValueOfType <= sumValueOfItemsInStock);
+            foreach (var item in validItems)
+            {
+                if(calculator.ValueIsChangeble(item.ValueOfType))
+                {
+                    resultList.Add(item);
+                }
+            }
+
+            return resultList;
         }
     }
 }
