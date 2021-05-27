@@ -27,10 +27,10 @@ namespace stock_api_application.Features.CheckOut.Commands
 
         public async Task<IEnumerable<StockItem>> Handle(CheckOutStockCommand request, CancellationToken cancellationToken)
         {
-            var sumOfItems = request.Items.Sum(item => item.ValueOfType * item.Amount);
+            int sumOfItems = request.Items.Sum(item => item.ValueOfType * item.Amount);
             int newPrice = RoundPrice(request.Price);
 
-            var diff = sumOfItems - newPrice;
+            int diff = sumOfItems - newPrice;
 
             if (diff < 0)
             {
@@ -45,42 +45,49 @@ namespace stock_api_application.Features.CheckOut.Commands
                 }
                 else
                 {
-                    var itemsInStock = await _stockRepository.GetItems();
-                    var orderedList = itemsInStock.Where(item => item.ValueOfType <= diff).OrderByDescending(item => item.ValueOfType);
-                    var changeList = new List<StockItem>();
-
-                    int copyOfDiff = CreateChangeList(orderedList, changeList, diff);
-
-                    if (copyOfDiff > 0)
-                    {
-                        throw new Exception("Not enought change in stock.");
-                    } 
-                    else
-                    {
-                        await _stockRepository.RemoveItems(changeList);
-                    }
-                    
+                    List<StockItem> changeList = await HandleChanges(diff);
                     return changeList;
                 }
             }
         }
 
-        private int CreateChangeList(IOrderedEnumerable<StockItem> orderedList, List<StockItem> changeList, int diff)
+        private async Task<List<StockItem>> HandleChanges(int diff)
+        {
+            var itemsInStock = await _stockRepository.GetItems();
+            var orderedList = itemsInStock.Where(item => item.ValueOfType <= diff).OrderByDescending(item => item.ValueOfType);
+            var changeList = new List<StockItem>();
+
+            int copyOfDiff = CalculateChanges(orderedList, changeList, diff);
+
+            if (copyOfDiff > 0)
+            {
+                throw new Exception("Not enought change in stock.");
+            }
+            else
+            {
+                await _stockRepository.RemoveItems(changeList);
+            }
+
+            return changeList;
+        }
+
+        private int CalculateChanges(IOrderedEnumerable<StockItem> orderedList, List<StockItem> changeList, int diff)
         {
             int copyOfDiff = diff;
             int index = 0;
             while (index < orderedList.Count() && copyOfDiff > 0)
             {
                 var item = orderedList.ElementAt(index);
-                var amount = copyOfDiff / item.ValueOfType;
-                if (amount > 0)
+                int amount = copyOfDiff / item.ValueOfType;
+                int usableAmount = Clamp(amount, item.Amount);
+
+                if (amount > 0 && usableAmount > 0)
                 {
-                    int avaiableAmout = Clamp(amount, item.Amount);
-                    copyOfDiff -= avaiableAmout * item.ValueOfType;
+                    copyOfDiff -= usableAmount * item.ValueOfType;
 
                     changeList.Add(new StockItem()
                     {
-                        Amount = avaiableAmout,
+                        Amount = usableAmount,
                         Type = item.Type,
                         ValueOfType = item.ValueOfType
                     });
@@ -92,6 +99,11 @@ namespace stock_api_application.Features.CheckOut.Commands
             return copyOfDiff;
         }
 
+        /// <summary>
+        /// Round the given price in case the end is 1,2,3,4,6,7,8,9
+        /// </summary>
+        /// <param name="price"></param>
+        /// <returns></returns>
         private int RoundPrice(int price)
         {
             var round = price % 5;

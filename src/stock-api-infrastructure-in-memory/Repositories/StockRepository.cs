@@ -79,12 +79,15 @@ namespace stock_api_infrastructure_in_memory.Repositories
                     if (result.Amount >= item.Amount)
                     {
                         result.Amount -= item.Amount;
+                        if (result.Amount == 0)
+                        {
+                            _stock.Remove(result);
+                        }
                     }
                     else
                     {
                         throw new NotEnoughTypeOfMoneyInStock();
                     }
-                    result.Amount += item.Amount;
                 }
             }
 
