@@ -16,7 +16,7 @@ namespace stock_api_application.Features.Stock.Commands
 
     public class StockCommandHandler : IRequestHandler<StockCommand, bool>
     {
-        private readonly IStockRepository _stockRepository;
+        private readonly IStockAddRepository _stockRepository;
 
         public StockCommandHandler(IStockRepository stockRepository)
         {
