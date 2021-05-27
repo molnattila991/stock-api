@@ -12,6 +12,7 @@ namespace stock_api_infrastructure_in_memory
         public static void AddInfrastructureInMemory(this IServiceCollection services)
         {
             services.AddSingleton<IStockRepository, StockRepository>();
+            services.AddSingleton<IValidItemRepository, ValidItemRepository>();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Serilog;
 using stock_api_application.Exceptions;
 using stock_api_application.Interfaces;
 using stock_api_domain.Entities;
@@ -35,6 +36,7 @@ namespace stock_api_application.Features.CheckOut.Commands
 
             if (diff < 0)
             {
+                Log.Error("Have not given enough money.");
                 throw new ChangeException("Have not given enough money.");
             }
             else
@@ -54,14 +56,13 @@ namespace stock_api_application.Features.CheckOut.Commands
 
         private async Task<List<StockItem>> HandleChanges(int diff)
         {
-            var itemsInStock = await _stockRepository.GetItems();
-            var orderedList = itemsInStock.Where(item => item.ValueOfType <= diff).OrderByDescending(item => item.ValueOfType);
             var changeList = new List<StockItem>();
 
-            int copyOfDiff = CalculateChanges(orderedList, changeList, diff);
+            int copyOfDiff = CalculateChanges(changeList, diff);
 
             if (copyOfDiff > 0)
             {
+                Log.Error("Not enought change in stock.");
                 throw new ChangeException("Not enought change in stock.");
             }
             else
@@ -72,10 +73,14 @@ namespace stock_api_application.Features.CheckOut.Commands
             return changeList;
         }
 
-        private int CalculateChanges(IOrderedEnumerable<StockItem> orderedList, List<StockItem> changeList, int diff)
+        private int CalculateChanges(List<StockItem> changeList, int diff)
         {
+            var itemsInStock = _stockRepository.GetItems().Result;
+            var orderedList = itemsInStock.Where(item => item.ValueOfType <= diff).OrderByDescending(item => item.ValueOfType);
+
             int copyOfDiff = diff;
             int index = 0;
+
             while (index < orderedList.Count() && copyOfDiff > 0)
             {
                 var item = orderedList.ElementAt(index);
@@ -118,16 +123,6 @@ namespace stock_api_application.Features.CheckOut.Commands
             }
         }
 
-        public int Clamp(int value, int max)
-        {
-            if(value <= max)
-            {
-                return value;
-            } 
-            else
-            {
-                return max;
-            }
-        }
+        public int Clamp(int value, int max) => value <= max ? value : max;
     }
 }
