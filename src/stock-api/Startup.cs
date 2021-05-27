@@ -49,6 +49,8 @@ namespace stock_api
 
             app.UseSwaggerExtension();
 
+            app.UseErrorHandlingMiddleware();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

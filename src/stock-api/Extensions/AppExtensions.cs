@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using stock_api.Middlewares;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,11 @@ namespace stock_api.Extensions
         {
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "stock_api v1"));
+        }
+
+        public static void UseErrorHandlingMiddleware(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<ErrorHandlerMiddleware>();
         }
     }
 }

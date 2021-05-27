@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using stock_api_application.Exceptions;
 using stock_api_application.Interfaces;
 using stock_api_domain.Entities;
 using System;
@@ -34,7 +35,7 @@ namespace stock_api_application.Features.CheckOut.Commands
 
             if (diff < 0)
             {
-                throw new Exception("Have not given enough money.");
+                throw new ChangeException("Have not given enough money.");
             }
             else
             {
@@ -61,7 +62,7 @@ namespace stock_api_application.Features.CheckOut.Commands
 
             if (copyOfDiff > 0)
             {
-                throw new Exception("Not enought change in stock.");
+                throw new ChangeException("Not enought change in stock.");
             }
             else
             {
