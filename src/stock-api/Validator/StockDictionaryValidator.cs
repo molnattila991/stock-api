@@ -16,7 +16,7 @@ namespace stock_api.Validator
                 {
                     Convert.ToInt32(item.Key);
                 }
-                catch(FormatException e)
+                catch(FormatException)
                 {
                     throw new NotValidCurrencyException($"Format is not valid for currency '{item.Key}'.");
                 }
