@@ -17,7 +17,8 @@ namespace stock_api.Controllers.v1
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await Mediator.Send(new StockGetAllQuery()));
+            var result = await Mediator.Send(new StockGetAllQuery());
+            return Ok(new StockResponse(result).Value);
         }
 
         [HttpPost]
@@ -36,7 +37,9 @@ namespace stock_api.Controllers.v1
             };
 
             await Mediator.Send(command);
-            return Ok(await Mediator.Send(new StockGetAllQuery()));
+
+            var result = await Mediator.Send(new StockGetAllQuery());
+            return Ok(new StockResponse(result).Value);
         }
     }
 }
