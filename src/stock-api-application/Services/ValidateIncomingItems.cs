@@ -11,12 +11,10 @@ namespace stock_api_application.Services
 {
     public class ValidateIncomingItems : IValidateIncomingItems
     {
-        private readonly IStockAddRepository _stockRepository;
         private readonly IValidItemRepository _validItemRepository;
 
-        public ValidateIncomingItems(IStockRepository stockRepository, IValidItemRepository validItemRepository)
+        public ValidateIncomingItems(IValidItemRepository validItemRepository)
         {
-            _stockRepository = stockRepository;
             _validItemRepository = validItemRepository;
         }
 

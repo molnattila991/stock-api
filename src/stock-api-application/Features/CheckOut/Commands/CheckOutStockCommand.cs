@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using stock_api_application.Exceptions;
 using stock_api_application.Interfaces;
@@ -23,17 +24,24 @@ namespace stock_api_application.Features.CheckOut.Commands
     {
         private readonly IStockRepository _stockRepository;
         private readonly IValidateIncomingItems _validateIncomingItems;
+        private readonly ILogger<CheckOutStockCommandHandler> _logger;
 
-        public CheckOutStockCommandHandler(IStockRepository stockRepository, IValidateIncomingItems validateIncomingItems)
+        public CheckOutStockCommandHandler(
+            IStockRepository stockRepository, 
+            IValidateIncomingItems validateIncomingItems,
+            ILogger<CheckOutStockCommandHandler> logger
+            )
         {
             _stockRepository = stockRepository;
             _validateIncomingItems = validateIncomingItems;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<StockItem>> Handle(CheckOutStockCommand request, CancellationToken cancellationToken)
         {
             if(_validateIncomingItems.ValidatedItems(request.Items)  == false)
             {
+                _logger.LogError(typeof(NotValidCurrencyException).ToString());
                 throw new NotValidCurrencyException();
             }
 
@@ -44,7 +52,7 @@ namespace stock_api_application.Features.CheckOut.Commands
 
             if (difference < 0)
             {
-                Log.Error("Have not given enough money.");
+                _logger.LogError("Have not given enough money.");
                 throw new ChangeException("Have not given enough money.");
             }
             else
@@ -69,7 +77,7 @@ namespace stock_api_application.Features.CheckOut.Commands
 
             if (result.Remaining > 0)
             {
-                Log.Error("Not enought change in stock.");
+                _logger.LogError("Not enought change in stock.");
                 throw new ChangeException("Not enought change in stock.");
             }
             else

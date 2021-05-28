@@ -1,14 +1,10 @@
 ﻿using MediatR;
-using Serilog;
-using stock_api_application.Exceptions;
-using stock_api_application.Interfaces;
 using stock_api_domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using stock_api_application.Exceptions;
+using stock_api_application.Interfaces;
 
 namespace stock_api_application.Features.Stock.Commands
 {
