@@ -35,6 +35,7 @@ namespace stock_api_application.Features.CheckOut.Commands
             _stockRepository = stockRepository;
             _validateIncomingItems = validateIncomingItems;
             _logger = logger;
+            _logger.LogInformation("CheckOutStockCommandHandler initiated...");
         }
 
         public async Task<IEnumerable<StockItem>> Handle(CheckOutStockCommand request, CancellationToken cancellationToken)
@@ -64,24 +65,30 @@ namespace stock_api_application.Features.CheckOut.Commands
                 }
                 else
                 {
-                    List<StockItem> changeList = await HandleChanges(difference);
+                    List<StockItem> changeList = await CalculateChanges(difference);
                     return changeList;
                 }
             }
         }
 
-        private async Task<List<StockItem>> HandleChanges(int value)
+        private async Task<List<StockItem>> CalculateChanges(int value)
         {
+            if (value == 0)
+            {
+                return new List<StockItem>();
+            }
+
             var calculator = new ChangeCalculator(_stockRepository);
             var result = calculator.CalculateChanges(value);
 
             if (result.Remaining > 0)
             {
-                _logger.LogError("Not enought change in stock.");
-                throw new ChangeException("Not enought change in stock.");
+                _logger.LogError("Not enough change in stock.");
+                throw new ChangeException("Not enough change in stock.");
             }
             else
             {
+                //Rollback inserted items
                 await _stockRepository.RemoveItems(result.Items);
             }
 

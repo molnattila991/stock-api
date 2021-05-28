@@ -4,7 +4,6 @@ using stock_api.Validator;
 using stock_api_application.Features.CheckOut.Commands;
 using stock_api_domain.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace stock_api.Controllers.v1
             };
 
             var result = await Mediator.Send(command);
-            return Ok(result);
+            return Ok(new StockResponse(result).Value);
         }
     }
 }
