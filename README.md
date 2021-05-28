@@ -1,5 +1,7 @@
 # Stock API
 
+Stock API requires .Net 5 installation on your machine.
+
 # Build and Run on Windows
 
 ## Build and Run in Visual Studio 2019 Community Edition
