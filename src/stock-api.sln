@@ -5,11 +5,15 @@ VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "stock-api", "stock-api\stock-api.csproj", "{A07192E1-9836-4808-9E2A-666962EA2F6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stock-api-domain", "stock-api-domain\stock-api-domain.csproj", "{B37F74F3-14FB-41CE-B278-4337508D7D70}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "stock-api-domain", "stock-api-domain\stock-api-domain.csproj", "{B37F74F3-14FB-41CE-B278-4337508D7D70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stock-api-application", "stock-api-application\stock-api-application.csproj", "{A3A121B2-AFF9-4B27-9AFB-DA3CF2FF9492}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "stock-api-application", "stock-api-application\stock-api-application.csproj", "{A3A121B2-AFF9-4B27-9AFB-DA3CF2FF9492}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stock-api-infrastructure-in-memory", "stock-api-infrastructure-in-memory\stock-api-infrastructure-in-memory.csproj", "{A1727BA6-E9DD-45CA-AB1D-9D60747361A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "stock-api-infrastructure-in-memory", "stock-api-infrastructure-in-memory\stock-api-infrastructure-in-memory.csproj", "{A1727BA6-E9DD-45CA-AB1D-9D60747361A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stock-api-application-test", "stock-api-application-test\stock-api-application-test.csproj", "{B64CE11E-1C96-45D0-B683-2FD5EE19B093}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stock-api-infrastructure-in-memory-test", "stock-api-infrastructure-in-memory-test\stock-api-infrastructure-in-memory-test.csproj", "{54345DF3-2461-498D-82DE-FC5532BDB171}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{A1727BA6-E9DD-45CA-AB1D-9D60747361A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1727BA6-E9DD-45CA-AB1D-9D60747361A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1727BA6-E9DD-45CA-AB1D-9D60747361A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B64CE11E-1C96-45D0-B683-2FD5EE19B093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B64CE11E-1C96-45D0-B683-2FD5EE19B093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B64CE11E-1C96-45D0-B683-2FD5EE19B093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B64CE11E-1C96-45D0-B683-2FD5EE19B093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54345DF3-2461-498D-82DE-FC5532BDB171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54345DF3-2461-498D-82DE-FC5532BDB171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54345DF3-2461-498D-82DE-FC5532BDB171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54345DF3-2461-498D-82DE-FC5532BDB171}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
